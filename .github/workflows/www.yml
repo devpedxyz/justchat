@@ -43,6 +43,7 @@ jobs:
 
       - name: Install Playwright Browsers
         run: pnpm exec playwright install --with-deps
+        working-directory: ./www
 
       - name: Run Playwright tests
         run: pnpm run test
