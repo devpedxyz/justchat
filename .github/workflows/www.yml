@@ -1,0 +1,65 @@
+name: SvelteKit CI
+
+on:
+  push:
+    branches:
+      - dev
+      - feature/www/*
+    paths:
+      - "www/*"
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 19
+
+      - name: Install pnpm
+        run: npm install -g pnpm
+        working-directory: ./www
+
+      - name: Install dependencies
+        run: pnpm install
+        working-directory: ./www
+
+      - name: Format with Prettier
+        run: pnpm run format
+        working-directory: ./www
+
+      - name: Lint
+        run: pnpm run lint
+        working-directory: ./www
+
+      - name: Run unit tests
+        run: pnpm run test:unit
+        working-directory: ./www
+
+      - name: Install Playwright Browsers
+        run: pnpm exec playwright install --with-deps
+
+      - name: Run Playwright tests
+        run: pnpm run test
+        working-directory: ./www
+
+      - name: Build project
+        run: pnpm run build
+        working-directory: ./www
+
+  # Uncomment and configure the following steps if you want to deploy to a server
+  # deploy:
+  #   needs: build-and-test
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v2
+  #
+  #     - name: Deploy to server
+  #       run: |
+  #         # your deployment commands here
