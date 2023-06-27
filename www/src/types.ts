@@ -4,6 +4,9 @@ export interface ChatMessage {
 	author_id: string;
 	created_at: string;
 }
+export interface ChatMessageWithDate extends ChatMessage {
+	date: Date;
+}
 export interface ChatRoom {
 	id: string;
 	name: string;

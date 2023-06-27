@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { ChatMessage, ChatRoom } from '../../../types';
+	import type { ChatMessage, ChatRoom, ChatMessageWithDate } from '../../../types';
 	import type { PageData } from './$types';
 	import type { GetChatRoomResponseBody, PostChatRoomMessageResponseBody } from './+server';
 
@@ -10,6 +10,19 @@
 	let errorSendingMessage: Error | null = null;
 	let chatRoom: ChatRoom | null = null;
 	let messages: ChatMessage[] = [];
+	$: messagesWithDate = messages.map<ChatMessageWithDate>((m) => {
+		const date = new Date(m.created_at);
+
+		return {
+			...m,
+			date,
+			created_at: date.toLocaleTimeString('en-US', {
+				hour: '2-digit',
+				minute: '2-digit',
+				hourCycle: 'h23'
+			})
+		};
+	});
 	let inputMessage = '';
 	let isLoadingChatRoom = false;
 	let errorLoadingChatRoom: Error | null = null;
@@ -60,7 +73,14 @@
 			console.log('response: ', response);
 
 			if (response.data.message) {
-				messages = [...messages.slice(0, messages.length - 1), response.data.message];
+				// messages = [...messages.slice(0, messages.length - 1), response.data.message];
+				const date = new Date(response.data.message.created_at);
+				date.setDate(date.getDate() + 1);
+				console.log('date: ', date, date.toString());
+				messages = [
+					...messages.slice(0, messages.length - 1),
+					{ ...response.data.message, created_at: date.toString() }
+				];
 			}
 		} catch (e) {
 			if (e instanceof Error) {
@@ -74,27 +94,24 @@
 	$: getChatRoom(data.params.slug);
 </script>
 
-<div class="flex flex-col w-full">
-	<div class="chat-room p-4 flex min-h-16 flex-grow overflow-y-auto">
+<div class="flex flex-col w-full gap-4">
+	<div class="chat-room flex min-h-16 flex-grow">
 		{#if isLoadingChatRoom}
 			<div class="flex items-center justify-center flex-grow">
 				<span class="loading loading-ring loading-lg" />
 			</div>
-		{:else if messages.length > 0}
-			<ul class="flex flex-col gap-2 flex-grow">
-				{#each messages as message}
+		{:else if messagesWithDate.length > 0}
+			<ul class="flex flex-col gap-2 flex-grow overflow-y-auto py-8 px-4">
+				{#each messagesWithDate as message, idx}
+					{#if (typeof message.created_at === 'string' && message.created_at.length > 0 && idx === 0) || (messagesWithDate[idx - 1] && message.date.getDay() !== messagesWithDate[idx - 1].date.getDay())}
+						<li class="text-center text-x-300">{message.date.toDateString()}</li>
+					{/if}
 					<li
 						class="flex gap-2 items-end {message.author_id === userId ? ' flex-row-reverse' : ''}"
 					>
 						<span class="p-2 rounded bg-x-100">{message.message}</span>
 						{#if typeof message.created_at === 'string' && message.created_at.length > 0}
-							<span class="text-x-300"
-								>{new Date(message.created_at).toLocaleTimeString('en-US', {
-									hour: '2-digit',
-									minute: '2-digit',
-									hourCycle: 'h23'
-								})}</span
-							>
+							<span class="text-x-300">{message.created_at}</span>
 						{/if}
 					</li>
 				{/each}
