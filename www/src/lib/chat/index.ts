@@ -2,13 +2,17 @@ import type { ChatMessage, ChatRoom } from '../../types';
 
 const chatRoomList: ChatRoom[] = Array(5)
 	.fill(null)
-	.map(() => ({
-		id: Math.random().toString(36).substring(7),
-		name: Math.random().toString(36).substring(7),
-		participants: [],
-		created_at: new Date().toISOString()
-	}));
-const chatRoomMessageListMap: Map<string, ChatMessage[]> = new Map();
+	.map(() => {
+		const id = Math.random().toString(36).substring(7);
+
+		return {
+			id,
+			name: `Room #${id}`,
+			participants: [],
+			created_at: new Date().toISOString()
+		};
+	});
+const chatRoomMessageListStore: Record<string, ChatMessage[]> = {};
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const sleepRandom = () => sleep(Math.random() * 1000);
 
@@ -21,25 +25,32 @@ export async function getChatRoomList() {
 export async function getOneChatRoom(id: string) {
 	await sleepRandom();
 
-	return chatRoomList.find((room) => room.id === id) || null;
+	const chatRoom = chatRoomList.find((room) => room.id === id) || null;
+
+	return chatRoom;
 }
 
 export async function getChatRoomMessageList(chatRoomId: string) {
 	await sleepRandom();
 
-	return chatRoomMessageListMap.get(chatRoomId) || [];
+	const messageList = chatRoomMessageListStore[chatRoomId] || [];
+
+	return messageList;
 }
 
 export async function addMessageToChatRoom(
 	chatRoomId: string,
 	message: Pick<ChatMessage, 'author_id' | 'message'>
-) {
+): Promise<ChatMessage> {
 	const chatRoomMessageList = await getChatRoomMessageList(chatRoomId);
-
-	chatRoomMessageList.push({
+	const newMessage = {
 		...message,
 		created_at: new Date().toISOString(),
 		id: Math.random().toString(36).substring(7)
-	});
-	chatRoomMessageListMap.set(chatRoomId, chatRoomMessageList);
+	};
+
+	chatRoomMessageList.push(newMessage);
+	chatRoomMessageListStore[chatRoomId] = chatRoomMessageList;
+
+	return newMessage;
 }

@@ -1,41 +1,108 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
-	import type { ChatRoomResponse } from './+page.server';
+	import type { ChatMessage, ChatRoom } from '../../../types';
+	import type { PageData } from './$types';
+	import type { GetChatRoomResponseBody, PostChatRoomMessageResponseBody } from './+server';
 
-	export let data: ChatRoomResponse | null = null;
-	let loading = false;
+	export let data: PageData;
+
+	let isSendingMessage = false;
+	let errorSendingMessage: Error | null = null;
+	let chatRoom: ChatRoom | null = null;
+	let messages: ChatMessage[] = [];
+	let inputMessage = '';
+	let isLoadingChatRoom = false;
+	let errorLoadingChatRoom: Error | null = null;
+
+	async function getChatRoom(slug: string) {
+		isLoadingChatRoom = true;
+
+		try {
+			const data: GetChatRoomResponseBody = await fetch(`/chat/${slug}`).then((res) => res.json());
+
+			chatRoom = data.data.chatRoom;
+			messages = data.data.messages;
+		} catch (error) {
+			if (error instanceof Error) {
+				errorLoadingChatRoom = error;
+			}
+		}
+
+		isLoadingChatRoom = false;
+	}
+
+	async function sendMessage() {
+		console.log('sendMessage', inputMessage);
+
+		const message = inputMessage;
+
+		inputMessage = '';
+
+		messages = [...messages, { message } as ChatMessage];
+
+		try {
+			const response: PostChatRoomMessageResponseBody = await fetch(`/chat/${data.params.slug}`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					message
+				})
+			}).then((res) => res.json());
+
+			console.log('response: ', response);
+
+			if (response.data.message) {
+				messages = [...messages.slice(0, messages.length - 1), response.data.message];
+			}
+		} catch (e) {
+			if (e instanceof Error) {
+				errorSendingMessage = e;
+			}
+		}
+	}
+
+	$: getChatRoom(data.params.slug);
 </script>
 
 <div class="flex flex-col w-full">
 	<div class="chat-room p-4 flex min-h-16 flex-grow overflow-y-auto">
-		{#if data && data.chatRoom}
-			{#if data.messages.length > 0}
-				<ul>
-					{#each data.messages as message}
-						<li>{message.message}</li>
-					{/each}
-				</ul>
-			{:else}
-				<div class="flex items-center justify-center flex-grow">
-					<p>Start chatting!</p>
-				</div>
-			{/if}
+		{#if isLoadingChatRoom}
+			<p class="text-center">
+				<span class="loading loading-ring loading-lg" />
+			</p>
+		{:else if messages.length > 0}
+			<ul>
+				{#each messages as message}
+					<li>{message.message}</li>
+				{/each}
+			</ul>
+		{:else if errorLoadingChatRoom}
+			<div class="alert alert-error">
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					class="stroke-current shrink-0 h-6 w-6"
+					fill="none"
+					viewBox="0 0 24 24"
+					><path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+						d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+					/></svg
+				>
+				<span>{errorLoadingChatRoom.message}</span>
+			</div>
+		{:else}
+			<div class="flex items-center justify-center flex-grow">
+				<p>Start chatting!</p>
+			</div>
 		{/if}
 	</div>
 	<form
-		method="POST"
-		action="?/sendMessage"
 		class="text-box flex flex-shrink flex-col justify-between gap-4 sm:flex-row"
-		use:enhance={() => {
-			loading = true;
-
-			return async ({ update }) => {
-				await update();
-				loading = false;
-			};
-		}}
+		on:submit|preventDefault
 	>
-		<input type="hidden" name="chatRoomId" value={data?.chatRoom?.id} />
 		<input
 			type="text"
 			id="message"
@@ -43,9 +110,14 @@
 			class="input flex-grow bg-[rgba(255,255,255,0.1)]"
 			placeholder="Enter your message here"
 			autocomplete="off"
+			required
+			bind:value={inputMessage}
 		/>
-		<button type="submit" class="btn btn-primary" disabled={loading || !data || !data.chatRoom}
-			>Send</button
+		<button
+			type="submit"
+			class="btn btn-primary"
+			disabled={isSendingMessage || !chatRoom}
+			on:click={sendMessage}>Send</button
 		>
 	</form>
 </div>
