@@ -5,6 +5,7 @@
 
 	export let data: PageData;
 
+	let userId = '1';
 	let isSendingMessage = false;
 	let errorSendingMessage: Error | null = null;
 	let chatRoom: ChatRoom | null = null;
@@ -33,11 +34,17 @@
 	async function sendMessage() {
 		console.log('sendMessage', inputMessage);
 
+		if (!inputMessage) {
+			return;
+		}
+
+		isSendingMessage = true;
+
 		const message = inputMessage;
 
 		inputMessage = '';
 
-		messages = [...messages, { message } as ChatMessage];
+		messages = [...messages, { message, author_id: userId } as ChatMessage];
 
 		try {
 			const response: PostChatRoomMessageResponseBody = await fetch(`/chat/${data.params.slug}`, {
@@ -60,6 +67,8 @@
 				errorSendingMessage = e;
 			}
 		}
+
+		isSendingMessage = false;
 	}
 
 	$: getChatRoom(data.params.slug);
@@ -68,13 +77,26 @@
 <div class="flex flex-col w-full">
 	<div class="chat-room p-4 flex min-h-16 flex-grow overflow-y-auto">
 		{#if isLoadingChatRoom}
-			<p class="text-center">
+			<div class="flex items-center justify-center flex-grow">
 				<span class="loading loading-ring loading-lg" />
-			</p>
+			</div>
 		{:else if messages.length > 0}
-			<ul>
+			<ul class="flex flex-col gap-2 flex-grow">
 				{#each messages as message}
-					<li>{message.message}</li>
+					<li
+						class="flex gap-2 items-end {message.author_id === userId ? ' flex-row-reverse' : ''}"
+					>
+						<span class="p-2 rounded bg-x-100">{message.message}</span>
+						{#if typeof message.created_at === 'string' && message.created_at.length > 0}
+							<span class="text-x-300"
+								>{new Date(message.created_at).toLocaleTimeString('en-US', {
+									hour: '2-digit',
+									minute: '2-digit',
+									hourCycle: 'h23'
+								})}</span
+							>
+						{/if}
+					</li>
 				{/each}
 			</ul>
 		{:else if errorLoadingChatRoom}
@@ -116,7 +138,7 @@
 		<button
 			type="submit"
 			class="btn btn-primary"
-			disabled={isSendingMessage || !chatRoom}
+			disabled={!chatRoom || !inputMessage}
 			on:click={sendMessage}>Send</button
 		>
 	</form>
