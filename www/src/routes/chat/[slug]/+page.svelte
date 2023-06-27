@@ -3,6 +3,7 @@
 	import type { ChatRoomResponse } from './+page.server';
 
 	export let data: ChatRoomResponse | null = null;
+	let loading = false;
 </script>
 
 <div class="flex flex-col w-full">
@@ -25,7 +26,14 @@
 		method="POST"
 		action="?/sendMessage"
 		class="text-box flex flex-shrink flex-col justify-between gap-4 sm:flex-row"
-		use:enhance
+		use:enhance={() => {
+			loading = true;
+
+			return async ({ update }) => {
+				await update();
+				loading = false;
+			};
+		}}
 	>
 		<input type="hidden" name="chatRoomId" value={data?.chatRoom?.id} />
 		<input
@@ -34,7 +42,10 @@
 			name="message"
 			class="input flex-grow bg-[rgba(255,255,255,0.1)]"
 			placeholder="Enter your message here"
+			autocomplete="off"
 		/>
-		<button type="submit" class="btn btn-primary" disabled={!data || !data.chatRoom}>Send</button>
+		<button type="submit" class="btn btn-primary" disabled={loading || !data || !data.chatRoom}
+			>Send</button
+		>
 	</form>
 </div>

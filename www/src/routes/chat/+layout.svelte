@@ -15,8 +15,8 @@
 				<ul class="chat-room-list flex flex-col gap-2">
 					{#if data && data.chatRooms}
 						{#each data.chatRooms as chatRoom}
-							<li class="p-2 hover:bg-slate-700 rounded-md">
-								<a href="/chat/{chatRoom.id}" class="block">{chatRoom.name}</a>
+							<li class="hover:bg-slate-700 rounded-md">
+								<a href="/chat/{chatRoom.id}" class="block p-2">{chatRoom.name}</a>
 							</li>
 						{/each}
 					{/if}

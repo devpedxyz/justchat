@@ -5,8 +5,8 @@ export interface ChatRoomListResponse {
 	chatRooms: ChatRoom[];
 }
 
-export function load(): ChatRoomListResponse {
+export async function load(): Promise<ChatRoomListResponse> {
 	return {
-		chatRooms: getChatRoomList()
+		chatRooms: await getChatRoomList()
 	};
 }
