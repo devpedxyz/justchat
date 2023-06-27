@@ -6,7 +6,7 @@ on:
       - dev
       - feature/www/*
     paths:
-      - "www/*"
+      - "www/**"
   workflow_dispatch:
 
 jobs:
