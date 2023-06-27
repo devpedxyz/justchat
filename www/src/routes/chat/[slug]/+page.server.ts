@@ -36,5 +36,7 @@ export const actions = {
 			author_id: '1',
 			message: message.toString()
 		});
+
+		return { success: true };
 	}
 };

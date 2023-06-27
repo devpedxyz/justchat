@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { enhance } from '$app/forms';
 	import type { ChatRoomResponse } from './+page.server';
 
 	export let data: ChatRoomResponse | null = null;
@@ -24,6 +25,7 @@
 		method="POST"
 		action="?/sendMessage"
 		class="text-box flex flex-shrink flex-col justify-between gap-4 sm:flex-row"
+		use:enhance
 	>
 		<input type="hidden" name="chatRoomId" value={data?.chatRoom?.id} />
 		<input
