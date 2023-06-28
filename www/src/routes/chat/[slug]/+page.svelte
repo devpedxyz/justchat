@@ -2,6 +2,8 @@
 	import type { ChatMessage, ChatRoom, ChatMessageWithDate } from '../../../types';
 	import type { PageData } from './$types';
 	import type { GetChatRoomResponseBody, PostChatRoomMessageResponseBody } from './+server';
+	import MessageInput from './message-input.svelte';
+	import MessagesBox from './messages-box.svelte';
 
 	export let data: PageData;
 
@@ -49,6 +51,7 @@
 	}
 
 	async function sendMessage() {
+		console.log('sendMessage()');
 		if (!inputMessage) {
 			return;
 		}
@@ -87,80 +90,46 @@
 	$: getChatRoom(data.params.slug);
 </script>
 
-<div class="flex flex-col w-full gap-4">
-	<div class="chat-room flex min-h-16 flex-grow">
-		{#if isLoadingChatRoom}
-			<div class="flex items-center justify-center flex-grow">
-				<span class="loading loading-ring loading-lg" />
-			</div>
-		{:else if messagesWithDate.length > 0}
-			<ul class="flex flex-col gap-2 flex-grow overflow-y-auto py-8 px-4">
-				{#each messagesWithDate as message, idx}
-					{#if messagesWithDate[idx - 1] && message.date && messagesWithDate[idx - 1].date && message.date.getDay() !== messagesWithDate[idx - 1].date?.getDay()}
-						<li class="text-center text-x-300">{message.date.toDateString()}</li>
-					{/if}
-					<li
-						class="flex gap-2 items-end {message.author_id === userId ? ' flex-row-reverse' : ''}"
-					>
-						<span class="contents">
-							{#if message.author_id !== userId}
-								<span class="avatar placeholder">
-									<div class="bg-neutral-focus text-neutral-content rounded-full w-12">
-										<span class="text-xs">AAA</span>
-									</div>
-								</span>
-							{/if}
-							<span class="p-2 rounded bg-x-100">{message.message}</span>
-						</span>
-						{#if typeof message.created_at === 'string' && message.created_at.length > 0}
-							<span class="text-x-300" title={message.date?.toLocaleString()}
-								>{message.created_at}</span
-							>
-						{/if}
-					</li>
-				{/each}
-			</ul>
-		{:else if errorLoadingChatRoom}
-			<div class="alert alert-error">
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					class="stroke-current shrink-0 h-6 w-6"
-					fill="none"
-					viewBox="0 0 24 24"
-					><path
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						stroke-width="2"
-						d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-					/></svg
-				>
-				<span>{errorLoadingChatRoom.message}</span>
-			</div>
-		{:else}
-			<div class="flex items-center justify-center flex-grow">
-				<p>Start chatting!</p>
-			</div>
-		{/if}
+{#if isLoadingChatRoom}
+	<div class="flex items-center justify-center flex-grow">
+		<span class="loading loading-ring loading-lg" />
 	</div>
-	<form
-		class="text-box flex flex-shrink flex-col justify-between gap-4 sm:flex-row"
-		on:submit|preventDefault
-	>
-		<input
-			type="text"
-			id="message"
-			name="message"
-			class="input flex-grow bg-[rgba(255,255,255,0.1)]"
-			placeholder="Enter your message here"
-			autocomplete="off"
-			required
-			bind:value={inputMessage}
-		/>
-		<button
-			type="submit"
-			class="btn btn-primary"
-			disabled={!chatRoom || !inputMessage}
-			on:click={sendMessage}>Send</button
+{:else if errorLoadingChatRoom}
+	<div class="alert alert-error">
+		<svg
+			xmlns="http://www.w3.org/2000/svg"
+			class="stroke-current shrink-0 h-6 w-6"
+			fill="none"
+			viewBox="0 0 24 24"
+			><path
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				stroke-width="2"
+				d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+			/></svg
 		>
-	</form>
-</div>
+		<span>{errorLoadingChatRoom.message}</span>
+	</div>
+{:else if chatRoom}
+	<div class="flex flex-col w-full h-full">
+		<div class="p-4 header bg-base-100 basis-1/12">
+			<h1 class="text-2xl font-bold">{chatRoom.name}</h1>
+		</div>
+		<div class="flex flex-col w-full gap-4 basis-11/12 flex-grow-0 min-h-0">
+			<div class="chat-room flex min-h-16 flex-grow">
+				{#if messagesWithDate.length > 0}
+					<MessagesBox {messagesWithDate} {userId} />
+				{:else}
+					<div class="flex items-center justify-center flex-grow">
+						<p>Start chatting!</p>
+					</div>
+				{/if}
+			</div>
+			<MessageInput bind:value={inputMessage} on:submit={sendMessage} />
+		</div>
+	</div>
+{:else}
+	<div class="flex items-center justify-center">
+		<p>Chat room not found</p>
+	</div>
+{/if}
