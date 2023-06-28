@@ -1,6 +1,9 @@
 <script lang="ts">
+	import { page } from '$app/stores';
 	import type { ChatRoom } from '../../types';
 	import type { ChatRoomListResponseBody } from './+server';
+	import SidebarToggler from './sidebar-toggler.svelte';
+	import { isSidebarOpen } from './store';
 
 	let chatRoomList: ChatRoom[] | null = null;
 	let isLoadingChatRoomList = false;
@@ -28,9 +31,12 @@
 
 <div class="h-screen w-screen flex flex-col">
 	<div class="flex overflow-y-auto flex-grow">
-		<aside class="w-0 sm:flex-[0_1_20%] overflow-y-auto">
+		<aside class="{$isSidebarOpen ? 'flex-[0_1_20%]' : 'w-0 basis-0'} overflow-y-auto">
+			<div class="flex justify-between items-center p-4">
+				<a href="/"><p>JustChat</p></a>
+				<SidebarToggler />
+			</div>
 			<div class="p-4">
-				<a href="/"><p class="mb-8">Chats</p></a>
 				<div>
 					{#if isLoadingChatRoomList}
 						<p class="text-center">
@@ -39,7 +45,11 @@
 					{:else if Array.isArray(chatRoomList)}
 						<ul class="chat-room-list flex flex-col gap-2">
 							{#each chatRoomList as chatRoom}
-								<li class="hover:bg-slate-700 rounded-md">
+								<li
+									class="hover:bg-slate-700 rounded-md{$page.params.slug === chatRoom.id
+										? ' bg-slate-700'
+										: ''}"
+								>
 									<a href="/chat/{chatRoom.id}" class="block p-2">{chatRoom.name}</a>
 								</li>
 							{/each}

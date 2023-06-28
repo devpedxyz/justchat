@@ -1,9 +1,21 @@
 <script lang="ts">
 	import { page } from '$app/stores';
+	import { onMount } from 'svelte';
 	import type { ChatMessage, ChatRoom, ChatMessageWithDate } from '../../../types';
 	import type { GetChatRoomResponseBody, PostChatRoomMessageResponseBody } from './+server';
 	import MessageInput from './message-input.svelte';
 	import MessagesBox from './messages-box.svelte';
+	import { goto } from '$app/navigation';
+	import SidebarToggler from '../sidebar-toggler.svelte';
+	import { isSidebarOpen } from '../store';
+
+	onMount(() => {
+		window.addEventListener('keydown', (e) => {
+			if (e.key === 'Escape') {
+				goto('/chat');
+			}
+		});
+	});
 
 	let userId = '1';
 	let isSendingMessage = false;
@@ -110,7 +122,10 @@
 	</div>
 {:else if chatRoom}
 	<div class="flex flex-col w-full h-full">
-		<div class="p-4 header bg-base-100 basis-1/12">
+		<div class="flex items-center gap-4 p-4 header bg-base-100 basis-1/12">
+			{#if !$isSidebarOpen}
+				<SidebarToggler />
+			{/if}
 			<h1 class="text-2xl font-bold">{chatRoom.name}</h1>
 		</div>
 		<div class="flex flex-col w-full gap-4 basis-11/12 flex-grow-0 min-h-0">
