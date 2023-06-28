@@ -6,8 +6,7 @@
 	import MessageInput from './message-input.svelte';
 	import MessagesBox from './messages-box.svelte';
 	import { goto } from '$app/navigation';
-	import SidebarToggler from '../sidebar-toggler.svelte';
-	import { isSidebarOpen } from '../store';
+	import { header } from '../store';
 
 	onMount(() => {
 		window.addEventListener('keydown', (e) => {
@@ -22,23 +21,6 @@
 	let errorSendingMessage: Error | null = null;
 	let chatRoom: ChatRoom | null = null;
 	let messages: ChatMessage[] = [];
-	$: messagesWithDate = messages.map<ChatMessageWithDate>((m) => {
-		if (!m.created_at) {
-			return { ...m, date: null };
-		}
-
-		const date = new Date(m.created_at);
-
-		return {
-			...m,
-			date,
-			created_at: date.toLocaleTimeString('en-US', {
-				hour: '2-digit',
-				minute: '2-digit',
-				hourCycle: 'h23'
-			})
-		};
-	});
 	let inputMessage = '';
 	let isLoadingChatRoom = false;
 	let errorLoadingChatRoom: Error | null = null;
@@ -98,6 +80,42 @@
 	}
 
 	$: getChatRoom($page.params.slug);
+	$: {
+		if (isLoadingChatRoom) {
+			header.set({
+				heading: 'Loading...'
+			});
+		} else if (errorLoadingChatRoom) {
+			header.set({
+				heading: 'Error'
+			});
+		} else if (chatRoom) {
+			header.set({
+				heading: chatRoom.name
+			});
+		} else {
+			header.set({
+				heading: ''
+			});
+		}
+	}
+	$: messagesWithDate = messages.map<ChatMessageWithDate>((m) => {
+		if (!m.created_at) {
+			return { ...m, date: null };
+		}
+
+		const date = new Date(m.created_at);
+
+		return {
+			...m,
+			date,
+			created_at: date.toLocaleTimeString('en-US', {
+				hour: '2-digit',
+				minute: '2-digit',
+				hourCycle: 'h23'
+			})
+		};
+	});
 </script>
 
 {#if isLoadingChatRoom}
@@ -122,13 +140,7 @@
 	</div>
 {:else if chatRoom}
 	<div class="flex flex-col w-full h-full">
-		<div class="flex items-center gap-4 p-4 header bg-base-100 basis-1/12">
-			{#if !$isSidebarOpen}
-				<SidebarToggler />
-			{/if}
-			<h1 class="text-2xl font-bold">{chatRoom.name}</h1>
-		</div>
-		<div class="flex flex-col w-full gap-4 basis-11/12 flex-grow-0 min-h-0">
+		<div class="flex flex-col w-full gap-4 flex-grow min-h-0">
 			<div class="chat-room flex min-h-16 flex-grow">
 				{#if messagesWithDate.length > 0}
 					<MessagesBox {messagesWithDate} {userId} />

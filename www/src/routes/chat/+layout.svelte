@@ -2,6 +2,7 @@
 	import { page } from '$app/stores';
 	import type { ChatRoom } from '../../types';
 	import type { ChatRoomListResponseBody } from './+server';
+	import Header from './header.svelte';
 	import SidebarToggler from './sidebar-toggler.svelte';
 	import { isSidebarOpen } from './store';
 
@@ -74,8 +75,11 @@
 				</div>
 			</div>
 		</aside>
-		<main class="flex flex-[1_1_80%] bg-base-300">
-			<slot />
-		</main>
+		<div class="flex flex-col flex-[1_1_80%]">
+			<Header />
+			<main class="flex bg-base-300 min-h-0 flex-grow">
+				<slot />
+			</main>
+		</div>
 	</div>
 </div>
