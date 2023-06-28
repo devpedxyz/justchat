@@ -1,11 +1,9 @@
 <script lang="ts">
+	import { page } from '$app/stores';
 	import type { ChatMessage, ChatRoom, ChatMessageWithDate } from '../../../types';
-	import type { PageData } from './$types';
 	import type { GetChatRoomResponseBody, PostChatRoomMessageResponseBody } from './+server';
 	import MessageInput from './message-input.svelte';
 	import MessagesBox from './messages-box.svelte';
-
-	export let data: PageData;
 
 	let userId = '1';
 	let isSendingMessage = false;
@@ -65,7 +63,7 @@
 		messages = [...messages, { message, author_id: '2' } as ChatMessage];
 
 		try {
-			const response: PostChatRoomMessageResponseBody = await fetch(`/chat/${data.params.slug}`, {
+			const response: PostChatRoomMessageResponseBody = await fetch(`/chat/${$page.params.slug}`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
@@ -87,7 +85,7 @@
 		isSendingMessage = false;
 	}
 
-	$: getChatRoom(data.params.slug);
+	$: getChatRoom($page.params.slug);
 </script>
 
 {#if isLoadingChatRoom}
