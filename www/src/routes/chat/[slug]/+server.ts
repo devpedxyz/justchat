@@ -24,7 +24,7 @@ export interface PostChatRoomMessageResponseBody {
 export async function POST({ request, params }): Promise<Response> {
 	const data: { message: string } = await request.json();
 	const message = await addMessageToChatRoom(params.slug, {
-		author_id: '1',
+		author_id: '2',
 		message: data.message
 	});
 

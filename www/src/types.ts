@@ -5,7 +5,7 @@ export interface ChatMessage {
 	created_at: string;
 }
 export interface ChatMessageWithDate extends ChatMessage {
-	date: Date;
+	date: Date | null;
 }
 export interface ChatRoom {
 	id: string;

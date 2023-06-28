@@ -11,6 +11,10 @@
 	let chatRoom: ChatRoom | null = null;
 	let messages: ChatMessage[] = [];
 	$: messagesWithDate = messages.map<ChatMessageWithDate>((m) => {
+		if (!m.created_at) {
+			return { ...m, date: null };
+		}
+
 		const date = new Date(m.created_at);
 
 		return {
@@ -45,8 +49,6 @@
 	}
 
 	async function sendMessage() {
-		console.log('sendMessage', inputMessage);
-
 		if (!inputMessage) {
 			return;
 		}
@@ -57,7 +59,7 @@
 
 		inputMessage = '';
 
-		messages = [...messages, { message, author_id: userId } as ChatMessage];
+		messages = [...messages, { message, author_id: '2' } as ChatMessage];
 
 		try {
 			const response: PostChatRoomMessageResponseBody = await fetch(`/chat/${data.params.slug}`, {
@@ -70,17 +72,8 @@
 				})
 			}).then((res) => res.json());
 
-			console.log('response: ', response);
-
 			if (response.data.message) {
-				// messages = [...messages.slice(0, messages.length - 1), response.data.message];
-				const date = new Date(response.data.message.created_at);
-				date.setDate(date.getDate() + 1);
-				console.log('date: ', date, date.toString());
-				messages = [
-					...messages.slice(0, messages.length - 1),
-					{ ...response.data.message, created_at: date.toString() }
-				];
+				messages = [...messages.slice(0, messages.length - 1), response.data.message];
 			}
 		} catch (e) {
 			if (e instanceof Error) {
@@ -103,15 +96,26 @@
 		{:else if messagesWithDate.length > 0}
 			<ul class="flex flex-col gap-2 flex-grow overflow-y-auto py-8 px-4">
 				{#each messagesWithDate as message, idx}
-					{#if (typeof message.created_at === 'string' && message.created_at.length > 0 && idx === 0) || (messagesWithDate[idx - 1] && message.date.getDay() !== messagesWithDate[idx - 1].date.getDay())}
+					{#if messagesWithDate[idx - 1] && message.date && messagesWithDate[idx - 1].date && message.date.getDay() !== messagesWithDate[idx - 1].date?.getDay()}
 						<li class="text-center text-x-300">{message.date.toDateString()}</li>
 					{/if}
 					<li
 						class="flex gap-2 items-end {message.author_id === userId ? ' flex-row-reverse' : ''}"
 					>
-						<span class="p-2 rounded bg-x-100">{message.message}</span>
+						<span class="contents">
+							{#if message.author_id !== userId}
+								<span class="avatar placeholder">
+									<div class="bg-neutral-focus text-neutral-content rounded-full w-12">
+										<span class="text-xs">AAA</span>
+									</div>
+								</span>
+							{/if}
+							<span class="p-2 rounded bg-x-100">{message.message}</span>
+						</span>
 						{#if typeof message.created_at === 'string' && message.created_at.length > 0}
-							<span class="text-x-300">{message.created_at}</span>
+							<span class="text-x-300" title={message.date?.toLocaleString()}
+								>{message.created_at}</span
+							>
 						{/if}
 					</li>
 				{/each}
