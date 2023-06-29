@@ -4,7 +4,6 @@
 	import { currentUser } from '$lib/user/store';
 	import { onMount } from 'svelte';
 	import type { Conversation } from '../../lib/chat/types';
-	import Header from './header.svelte';
 	import SidebarToggler from './sidebar-toggler.svelte';
 	import { isSidebarOpen } from './store';
 	import { getConversationList } from '$lib/chat/api-client';

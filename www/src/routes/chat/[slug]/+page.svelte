@@ -120,7 +120,9 @@
 </script>
 
 {#if conversation}
-	<Header isSidebarOpen={$isSidebarOpen} heading={conversation.name} />
+	<Header isSidebarOpen={$isSidebarOpen} heading={conversation.name}>
+		<div class="flex justify-end"><div class="btn">Info</div></div>
+	</Header>
 {/if}
 <Main>
 	{#if isLoadingConversation}
@@ -170,3 +172,5 @@
 		</div>
 	{/if}
 </Main>
+
+<!-- <div class="convo-info fixed top-0 right-0 min-w-min flex">Hello</div> -->
