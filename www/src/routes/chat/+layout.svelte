@@ -99,10 +99,7 @@
 			</div>
 		</aside>
 		<div class="flex flex-col flex-[1_1_80%]">
-			<Header />
-			<main class="flex bg-base-300 min-h-0 flex-grow">
-				<slot />
-			</main>
+			<slot />
 		</div>
 	</div>
 </div>
