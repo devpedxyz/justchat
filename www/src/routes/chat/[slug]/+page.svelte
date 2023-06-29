@@ -1,12 +1,13 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
-	import type { ChatMessage, Conversation, ChatMessageWithDate } from '../../../types';
-	import type { GetConversationResponseBody, PostConversationMessageResponseBody } from './+server';
+	import type { ChatMessage, Conversation, ChatMessageWithDate } from '$lib/chat/types';
 	import MessageInput from './message-input.svelte';
 	import MessagesBox from './messages-box.svelte';
 	import { goto } from '$app/navigation';
 	import { header } from '../store';
+	import { addMessageToConversation, getOneConversation } from '$lib/chat/api-client';
+	import { currentUser } from '$lib/user/store';
 
 	onMount(() => {
 		window.addEventListener('keydown', (e) => {
@@ -16,9 +17,6 @@
 		});
 	});
 
-	let userId = '1';
-	let isSendingMessage = false;
-	let errorSendingMessage: Error | null = null;
 	let conversation: Conversation | null = null;
 	let messages: ChatMessage[] = [];
 	let inputMessage = '';
@@ -29,12 +27,16 @@
 		isLoadingConversation = true;
 
 		try {
-			const data: GetConversationResponseBody = await fetch(`/chat/${slug}`).then((res) =>
-				res.json()
-			);
+			const res = await getOneConversation(slug);
 
-			conversation = data.data.conversation;
-			messages = data.data.messages;
+			if (res.error) {
+				throw new Error(res.error.message);
+			}
+
+			if (res.data) {
+				conversation = res.data.conversation;
+				messages = res.data.messages;
+			}
 		} catch (error) {
 			if (error instanceof Error) {
 				errorLoadingConversation = error;
@@ -50,38 +52,30 @@
 			return;
 		}
 
-		isSendingMessage = true;
-
 		const message = inputMessage;
 
 		inputMessage = '';
 
-		messages = [...messages, { message, author_id: '2' } as ChatMessage];
+		messages = [...messages, { message, author_id: $currentUser.id } as ChatMessage];
 
 		try {
-			const response: PostConversationMessageResponseBody = await fetch(
-				`/chat/${$page.params.slug}`,
-				{
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json'
-					},
-					body: JSON.stringify({
-						message
-					})
-				}
-			).then((res) => res.json());
+			const response = await addMessageToConversation($page.params.slug, {
+				message,
+				author_id: $currentUser.id
+			});
 
-			if (response.data.message) {
-				messages = [...messages.slice(0, messages.length - 1), response.data.message];
+			if (response.error) {
+				throw new Error(response.error.message);
+			}
+
+			if (response.data?.createdMessage) {
+				messages = [...messages.slice(0, messages.length - 1), response.data.createdMessage];
 			}
 		} catch (e) {
 			if (e instanceof Error) {
-				errorSendingMessage = e;
+				// @Todo handle error
 			}
 		}
-
-		isSendingMessage = false;
 	}
 
 	$: getConversation($page.params.slug);
@@ -148,7 +142,11 @@
 		<div class="flex flex-col w-full gap-4 flex-grow min-h-0">
 			<div class="chat-room flex min-h-16 flex-grow">
 				{#if messagesWithDate.length > 0}
-					<MessagesBox {messagesWithDate} {userId} />
+					<MessagesBox
+						{messagesWithDate}
+						user={$currentUser}
+						participants={conversation.participants}
+					/>
 				{:else}
 					<div class="flex items-center justify-center flex-grow">
 						<p>Start chatting!</p>

@@ -1,22 +1,28 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
-	import type { Conversation } from '../../types';
-	import type { ConversationListResponseBody } from './+server';
+	import { currentUser } from '$lib/user/store';
+	import { onMount } from 'svelte';
+	import type { Conversation } from '../../lib/chat/types';
 	import Header from './header.svelte';
 	import SidebarToggler from './sidebar-toggler.svelte';
 	import { isSidebarOpen } from './store';
-
-	let conversationList: Conversation[] | null = null;
-	let isLoadingConversationList = false;
-	let errorLoadingConversationList: Error | null = null;
+	import { getConversationList } from '$lib/chat/api-client';
+	import { getCurrentUser } from '$lib/user/api-client';
 
 	async function loadConversationList() {
 		isLoadingConversationList = true;
 
 		try {
-			const data: ConversationListResponseBody = await fetch('/chat').then((res) => res.json());
+			const res = await getConversationList();
 
-			conversationList = data.conversations;
+			if (res.error) {
+				throw new Error(res.error.message);
+			}
+
+			if (res.data) {
+				conversationList = res.data.conversationList;
+			}
 		} catch (e) {
 			// @Todo Send log to server
 			if (e instanceof Error) {
@@ -27,7 +33,24 @@
 		isLoadingConversationList = false;
 	}
 
-	loadConversationList();
+	let conversationList: Conversation[] | null = null;
+	let isLoadingConversationList = false;
+	let errorLoadingConversationList: Error | null = null;
+
+	onMount(async () => {
+		const res = await getCurrentUser();
+
+		if (res.error) {
+			throw new Error(res.error.message);
+		}
+
+		if (!res.data) {
+			return goto('/login');
+		}
+
+		currentUser.set(res.data.user);
+		loadConversationList();
+	});
 </script>
 
 <div class="h-screen w-screen flex flex-col">
