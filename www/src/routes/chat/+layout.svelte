@@ -1,33 +1,33 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import type { ChatRoom } from '../../types';
-	import type { ChatRoomListResponseBody } from './+server';
+	import type { Conversation } from '../../types';
+	import type { ConversationListResponseBody } from './+server';
 	import Header from './header.svelte';
 	import SidebarToggler from './sidebar-toggler.svelte';
 	import { isSidebarOpen } from './store';
 
-	let chatRoomList: ChatRoom[] | null = null;
-	let isLoadingChatRoomList = false;
-	let errorLoadingChatRoomList: Error | null = null;
+	let conversationList: Conversation[] | null = null;
+	let isLoadingConversationList = false;
+	let errorLoadingConversationList: Error | null = null;
 
-	async function loadChatRoomList() {
-		isLoadingChatRoomList = true;
+	async function loadConversationList() {
+		isLoadingConversationList = true;
 
 		try {
-			const data: ChatRoomListResponseBody = await fetch('/chat').then((res) => res.json());
+			const data: ConversationListResponseBody = await fetch('/chat').then((res) => res.json());
 
-			chatRoomList = data.chatRooms;
+			conversationList = data.conversations;
 		} catch (e) {
 			// @Todo Send log to server
 			if (e instanceof Error) {
-				errorLoadingChatRoomList = e;
+				errorLoadingConversationList = e;
 			}
 		}
 
-		isLoadingChatRoomList = false;
+		isLoadingConversationList = false;
 	}
 
-	loadChatRoomList();
+	loadConversationList();
 </script>
 
 <div class="h-screen w-screen flex flex-col">
@@ -39,23 +39,23 @@
 			</div>
 			<div class="p-4">
 				<div>
-					{#if isLoadingChatRoomList}
+					{#if isLoadingConversationList}
 						<p class="text-center">
 							<span class="loading loading-ring loading-lg" />
 						</p>
-					{:else if Array.isArray(chatRoomList)}
+					{:else if Array.isArray(conversationList)}
 						<ul class="chat-room-list flex flex-col gap-2">
-							{#each chatRoomList as chatRoom}
+							{#each conversationList as conversation}
 								<li
-									class="hover:bg-slate-700 rounded-md{$page.params.slug === chatRoom.id
+									class="hover:bg-slate-700 rounded-md{$page.params.slug === conversation.id
 										? ' bg-slate-700'
 										: ''}"
 								>
-									<a href="/chat/{chatRoom.id}" class="block p-2">{chatRoom.name}</a>
+									<a href="/chat/{conversation.id}" class="block p-2">{conversation.name}</a>
 								</li>
 							{/each}
 						</ul>
-					{:else if errorLoadingChatRoomList}
+					{:else if errorLoadingConversationList}
 						<div class="alert alert-error">
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
@@ -69,7 +69,7 @@
 									d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
 								/></svg
 							>
-							<span>{errorLoadingChatRoomList.message}</span>
+							<span>{errorLoadingConversationList.message}</span>
 						</div>
 					{/if}
 				</div>

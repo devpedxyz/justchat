@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
-	import type { ChatMessage, ChatRoom, ChatMessageWithDate } from '../../../types';
-	import type { GetChatRoomResponseBody, PostChatRoomMessageResponseBody } from './+server';
+	import type { ChatMessage, Conversation, ChatMessageWithDate } from '../../../types';
+	import type { GetConversationResponseBody, PostConversationMessageResponseBody } from './+server';
 	import MessageInput from './message-input.svelte';
 	import MessagesBox from './messages-box.svelte';
 	import { goto } from '$app/navigation';
@@ -19,27 +19,29 @@
 	let userId = '1';
 	let isSendingMessage = false;
 	let errorSendingMessage: Error | null = null;
-	let chatRoom: ChatRoom | null = null;
+	let conversation: Conversation | null = null;
 	let messages: ChatMessage[] = [];
 	let inputMessage = '';
-	let isLoadingChatRoom = false;
-	let errorLoadingChatRoom: Error | null = null;
+	let isLoadingConversation = false;
+	let errorLoadingConversation: Error | null = null;
 
-	async function getChatRoom(slug: string) {
-		isLoadingChatRoom = true;
+	async function getConversation(slug: string) {
+		isLoadingConversation = true;
 
 		try {
-			const data: GetChatRoomResponseBody = await fetch(`/chat/${slug}`).then((res) => res.json());
+			const data: GetConversationResponseBody = await fetch(`/chat/${slug}`).then((res) =>
+				res.json()
+			);
 
-			chatRoom = data.data.chatRoom;
+			conversation = data.data.conversation;
 			messages = data.data.messages;
 		} catch (error) {
 			if (error instanceof Error) {
-				errorLoadingChatRoom = error;
+				errorLoadingConversation = error;
 			}
 		}
 
-		isLoadingChatRoom = false;
+		isLoadingConversation = false;
 	}
 
 	async function sendMessage() {
@@ -57,15 +59,18 @@
 		messages = [...messages, { message, author_id: '2' } as ChatMessage];
 
 		try {
-			const response: PostChatRoomMessageResponseBody = await fetch(`/chat/${$page.params.slug}`, {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify({
-					message
-				})
-			}).then((res) => res.json());
+			const response: PostConversationMessageResponseBody = await fetch(
+				`/chat/${$page.params.slug}`,
+				{
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify({
+						message
+					})
+				}
+			).then((res) => res.json());
 
 			if (response.data.message) {
 				messages = [...messages.slice(0, messages.length - 1), response.data.message];
@@ -79,19 +84,19 @@
 		isSendingMessage = false;
 	}
 
-	$: getChatRoom($page.params.slug);
+	$: getConversation($page.params.slug);
 	$: {
-		if (isLoadingChatRoom) {
+		if (isLoadingConversation) {
 			header.set({
 				heading: 'Loading...'
 			});
-		} else if (errorLoadingChatRoom) {
+		} else if (errorLoadingConversation) {
 			header.set({
 				heading: 'Error'
 			});
-		} else if (chatRoom) {
+		} else if (conversation) {
 			header.set({
-				heading: chatRoom.name
+				heading: conversation.name
 			});
 		} else {
 			header.set({
@@ -118,11 +123,11 @@
 	});
 </script>
 
-{#if isLoadingChatRoom}
+{#if isLoadingConversation}
 	<div class="flex items-center justify-center flex-grow">
 		<span class="loading loading-ring loading-lg" />
 	</div>
-{:else if errorLoadingChatRoom}
+{:else if errorLoadingConversation}
 	<div class="alert alert-error">
 		<svg
 			xmlns="http://www.w3.org/2000/svg"
@@ -136,9 +141,9 @@
 				d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
 			/></svg
 		>
-		<span>{errorLoadingChatRoom.message}</span>
+		<span>{errorLoadingConversation.message}</span>
 	</div>
-{:else if chatRoom}
+{:else if conversation}
 	<div class="flex flex-col w-full h-full">
 		<div class="flex flex-col w-full gap-4 flex-grow min-h-0">
 			<div class="chat-room flex min-h-16 flex-grow">
@@ -154,7 +159,7 @@
 		</div>
 	</div>
 {:else}
-	<div class="flex items-center justify-center">
-		<p>Chat room not found</p>
+	<div class="flex items-center justify-center flex-grow">
+		<p>Conversation not found</p>
 	</div>
 {/if}

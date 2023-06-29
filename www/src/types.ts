@@ -7,7 +7,7 @@ export interface ChatMessage {
 export interface ChatMessageWithDate extends ChatMessage {
 	date: Date | null;
 }
-export interface ChatRoom {
+export interface Conversation {
 	id: string;
 	name: string;
 	participants: string[];

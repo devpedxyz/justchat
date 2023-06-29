@@ -1,6 +1,6 @@
-import type { ChatMessage, ChatRoom } from '../../types';
+import type { ChatMessage, Conversation } from '../../types';
 
-const chatRoomList: ChatRoom[] = Array(5)
+const conversationList: Conversation[] = Array(5)
 	.fill(null)
 	.map(() => {
 		const id = Math.random().toString(36).substring(7);
@@ -12,45 +12,45 @@ const chatRoomList: ChatRoom[] = Array(5)
 			created_at: new Date().toISOString()
 		};
 	});
-const chatRoomMessageListStore: Record<string, ChatMessage[]> = {};
+const conversationMessageListStore: Record<string, ChatMessage[]> = {};
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const sleepRandom = () => sleep(Math.random() * 1000);
 
-export async function getChatRoomList() {
+export async function getConversationList() {
 	await sleepRandom();
 
-	return chatRoomList;
+	return conversationList;
 }
 
-export async function getOneChatRoom(id: string) {
+export async function getOneConversation(id: string) {
 	await sleepRandom();
 
-	const chatRoom = chatRoomList.find((room) => room.id === id) || null;
+	const conversation = conversationList.find((room) => room.id === id) || null;
 
-	return chatRoom;
+	return conversation;
 }
 
-export async function getChatRoomMessageList(chatRoomId: string) {
+export async function getConversationMessageList(conversationId: string) {
 	await sleepRandom();
 
-	const messageList = chatRoomMessageListStore[chatRoomId] || [];
+	const messageList = conversationMessageListStore[conversationId] || [];
 
 	return messageList;
 }
 
-export async function addMessageToChatRoom(
-	chatRoomId: string,
+export async function addMessageToConversation(
+	conversationId: string,
 	message: Pick<ChatMessage, 'author_id' | 'message'>
 ): Promise<ChatMessage> {
-	const chatRoomMessageList = await getChatRoomMessageList(chatRoomId);
+	const conversationMessageList = await getConversationMessageList(conversationId);
 	const newMessage = {
 		...message,
 		created_at: new Date().toISOString(),
 		id: Math.random().toString(36).substring(7)
 	};
 
-	chatRoomMessageList.push(newMessage);
-	chatRoomMessageListStore[chatRoomId] = chatRoomMessageList;
+	conversationMessageList.push(newMessage);
+	conversationMessageListStore[conversationId] = conversationMessageList;
 
 	return newMessage;
 }

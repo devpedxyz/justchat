@@ -1,13 +1,13 @@
-import { getChatRoomList } from '$lib/chat';
+import { getConversationList } from '$lib/chat';
 import { json } from '@sveltejs/kit';
-import type { ChatRoom } from '../../types';
+import type { Conversation } from '../../types';
 
-export interface ChatRoomListResponseBody {
-	chatRooms: ChatRoom[];
+export interface ConversationListResponseBody {
+	conversations: Conversation[];
 }
 
 export async function GET(): Promise<Response> {
-	const chatRooms = await getChatRoomList();
+	const conversations = await getConversationList();
 
-	return json({ chatRooms });
+	return json({ conversations });
 }
