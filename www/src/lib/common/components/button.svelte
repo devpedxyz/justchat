@@ -22,7 +22,7 @@
 		secondary: outline ? 'text-secondary border-2 border-secondary' : 'bg-secondary text-text-base',
 		accent: outline
 			? 'text-accent border-2 border-accent'
-			: 'bg-accent/50 text-accent shadow-sm shadow-accent'
+			: 'bg-accent text-text-invert shadow-sm shadow-accent'
 	};
 </script>
 

@@ -18,7 +18,7 @@
 		type="text"
 		id="message"
 		name="message"
-		class="flex-grow p-4 rounded bg-input-gb text-input-text focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-opacity-80"
+		class="flex-grow p-4 rounded bg-input-bg text-input-text focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-opacity-80 placeholder:text-input-text/60"
 		placeholder="Enter your message here"
 		autocomplete="off"
 		required

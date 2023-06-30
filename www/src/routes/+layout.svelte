@@ -8,6 +8,6 @@
 	});
 </script>
 
-<!-- <div data-set-theme="night" class="btn">Night</div>
-<div data-set-theme="light" class="btn">Light</div> -->
+<div data-set-theme="night" class="btn">Night</div>
+<div data-set-theme="light" class="btn">Light</div>
 <slot />

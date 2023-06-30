@@ -3,10 +3,6 @@
 @tailwind utilities;
 
 @layer base {
-	html[data-theme='night'] {
-		--color-layer: 255 255 255;
-	}
-
 	:root {
 		--color-primary: 22 60% 46%;
 		--color-secondary: 30 70% 90%;
@@ -24,6 +20,33 @@
 		--color-input-text: var(--color-text-base);
 
 		--color-chat-sidebar-bg: 22 60% 96%;
+		--color-chat-sidebar-toggler-bg: 22 100% 100%;
+		--color-chat-sidebar-toggler-fg: 22 100% 100%;
+		--color-chat-header-bg: var(--color-chat-sidebar-bg);
+		--color-chat-header-heading: var(--color-primary);
+		--color-chat-msg-bg: var(--color-secondary);
+		--color-chat-msg-text: 22 100% 100%;
+		--color-chat-msg-time: 22 100% 100%;
+		--color-chat-chatbox: var(--color-bg);
+	}
+
+	html[data-theme='night'] {
+		--color-primary: 22 80% 70%;
+		--color-secondary: 30 60% 14%;
+		--color-accent: 22 80% 70%;
+		--color-neutral-base: 22 100% 98%;
+		--color-neutral-dark: 22 100% 100%;
+		--color-neutral-light: 22 100% 100%;
+
+		--color-bg: 22 60% 3%;
+
+		--color-text-base: 22 60% 80%;
+		--color-text-invert: 22 60% 10%;
+
+		--color-input-bg: 22 60% 8%;
+		--color-input-text: var(--color-text-base);
+
+		--color-chat-sidebar-bg: 22 60% 6%;
 		--color-chat-sidebar-toggler-bg: 22 100% 100%;
 		--color-chat-sidebar-toggler-fg: 22 100% 100%;
 		--color-chat-header-bg: var(--color-chat-sidebar-bg);
