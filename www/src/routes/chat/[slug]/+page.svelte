@@ -10,6 +10,7 @@
 	import { currentUser } from '$lib/user/store';
 	import Main from '../main.svelte';
 	import Header from '../header.svelte';
+	import Button from '$lib/common/components/button.svelte';
 
 	onMount(() => {
 		window.addEventListener('keydown', (e) => {
@@ -120,8 +121,10 @@
 </script>
 
 {#if conversation}
-	<Header isSidebarOpen={$isSidebarOpen} heading={conversation.name}>
-		<div class="flex justify-end"><div class="btn">Info</div></div>
+	<Header showSidebar={!$isSidebarOpen} heading={conversation.name}>
+		<div class="flex justify-end">
+			<Button preset="secondary">Info</Button>
+		</div>
 	</Header>
 {/if}
 <Main>
@@ -148,9 +151,9 @@
 			</div>
 		</div>
 	{:else if conversation}
-		<div class="flex flex-col w-full h-full">
+		<div class="flex flex-col w-full h-full bg-chat-chatbox">
 			<div class="flex flex-col w-full gap-4 flex-grow min-h-0">
-				<div class="chat-room flex min-h-16 flex-grow">
+				<div class="chat-room flex min-h-16 flex-grow overflow-y-auto bg-chat-chatbox">
 					{#if messagesWithDate.length > 0}
 						<MessagesBox
 							{messagesWithDate}

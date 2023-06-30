@@ -1,15 +1,15 @@
 <script lang="ts">
 	import SidebarToggler from './sidebar-toggler.svelte';
 
-	export let isSidebarOpen = false;
+	export let showSidebar = true;
 	export let heading = '';
 </script>
 
-<header class="flex items-center gap-4 p-4 header bg-base-100 basis-1/12">
-	{#if !isSidebarOpen}
+<header class="flex items-center gap-4 p-4 header basis-1/12 bg-chat-header-bg">
+	{#if showSidebar}
 		<SidebarToggler />
 	{/if}
-	<h1 class="text-2xl font-bold">{heading}</h1>
+	<h1 class="text-xl font-bold text-chat-header-heading">{heading}</h1>
 	<div class="flex-grow">
 		<slot />
 	</div>

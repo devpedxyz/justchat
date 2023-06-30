@@ -1,3 +1,60 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+	html[data-theme='night'] {
+		--color-layer: 255 255 255;
+	}
+
+	:root {
+		--color-primary: 22 60% 46%;
+		--color-secondary: 30 70% 90%;
+		--color-accent: 30 60% 50%;
+		--color-neutral-base: 22 100% 98%;
+		--color-neutral-dark: 22 100% 100%;
+		--color-neutral-light: 22 100% 100%;
+
+		--color-bg: 22 60% 98%;
+
+		--color-text-base: 22 60% 15%;
+		--color-text-invert: 22 60% 90%;
+
+		--color-input-bg: 0 100% 100%;
+		--color-input-text: var(--color-text-base);
+
+		--color-chat-sidebar-bg: 22 60% 96%;
+		--color-chat-sidebar-toggler-bg: 22 100% 100%;
+		--color-chat-sidebar-toggler-fg: 22 100% 100%;
+		--color-chat-header-bg: var(--color-chat-sidebar-bg);
+		--color-chat-header-heading: var(--color-primary);
+		--color-chat-msg-bg: var(--color-secondary);
+		--color-chat-msg-text: 22 100% 100%;
+		--color-chat-msg-time: 22 100% 100%;
+		--color-chat-chatbox: var(--color-bg);
+	}
+}
+
+html,
+body {
+	@apply bg-bg text-text-base;
+}
+
+.no-scrollbar {
+	-ms-overflow-style: none;
+	scrollbar-width: none;
+}
+
+/* Customize webkit scrollbar */
+::-webkit-scrollbar {
+	@apply w-2;
+}
+
+::-webkit-scrollbar-thumb {
+	/* background: #888; */
+	@apply rounded-lg bg-secondary/40;
+}
+
+::-webkit-scrollbar-thumb:hover {
+	@apply bg-secondary/60;
+}

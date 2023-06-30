@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Button from '$lib/common/components/button.svelte';
 	import { createEventDispatcher } from 'svelte';
 
 	export let value: string;
@@ -7,7 +8,7 @@
 </script>
 
 <form
-	class="text-box p-4 flex flex-shrink flex-col justify-between gap-4 sm:flex-row"
+	class="text-box p-4 flex flex-shrink flex-col justify-between gap-4 sm:flex-row bg-chat-chatbox"
 	on:submit|preventDefault={() => {
 		console.log('submittt');
 		dispatch('submit');
@@ -17,11 +18,11 @@
 		type="text"
 		id="message"
 		name="message"
-		class="input flex-grow bg-[rgba(255,255,255,0.1)]"
+		class="flex-grow p-4 rounded bg-input-gb text-input-text focus:outline-none focus:ring-2 focus:ring-secondary focus:ring-opacity-80"
 		placeholder="Enter your message here"
 		autocomplete="off"
 		required
 		bind:value
 	/>
-	<button type="submit" class="btn btn-primary" disabled={!value}>Send</button>
+	<Button attrs={{ type: 'submit ', disabled: !value }} preset="accent">Send</Button>
 </form>
