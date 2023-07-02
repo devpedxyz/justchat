@@ -4,9 +4,8 @@
 	import type { Conversation } from '$lib/chat/types';
 	import { onMount } from 'svelte';
 	import ConversationList from './conversation-list.svelte';
-	import SidebarToggler from './sidebar-toggler.svelte';
-
-	export let isSidebarOpen = false;
+	import Button from '$lib/common/components/button.svelte';
+	import Sidebar from '$lib/common/components/sidebar.svelte';
 
 	async function loadConversationList() {
 		isLoadingConversationList = true;
@@ -40,40 +39,35 @@
 	});
 </script>
 
-<aside
-	class="{isSidebarOpen
-		? 'flex-[0_1_20%]'
-		: 'w-0 basis-0'} overflow-y-auto no-scrollbar bg-chat-sidebar-bg"
->
-	<div class="flex justify-between items-center p-4">
-		<a href="/" class="text-2xl font-bold text-primary"><p>JustChat</p></a>
-		<SidebarToggler />
+<Sidebar>
+	<a slot="header" href="/" class="text-2xl font-bold text-primary"><p>JustChat</p></a>
+	<div slot="body" class="contents">
+		{#if isLoadingConversationList}
+			<p class="text-center">
+				<span class="loading loading-ring loading-lg" />
+			</p>
+		{:else if Array.isArray(conversationList)}
+			<ConversationList {conversationList} selectedConversationId={$page.params.slug} />
+		{:else if errorLoadingConversationList}
+			<div class="alert alert-error">
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					class="stroke-current shrink-0 h-6 w-6"
+					fill="none"
+					viewBox="0 0 24 24"
+					><path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+						d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+					/></svg
+				>
+				<span>{errorLoadingConversationList.message}</span>
+			</div>
+		{/if}
 	</div>
-	<div class="p-4">
-		<div>
-			{#if isLoadingConversationList}
-				<p class="text-center">
-					<span class="loading loading-ring loading-lg" />
-				</p>
-			{:else if Array.isArray(conversationList)}
-				<ConversationList {conversationList} selectedConversationId={$page.params.slug} />
-			{:else if errorLoadingConversationList}
-				<div class="alert alert-error">
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						class="stroke-current shrink-0 h-6 w-6"
-						fill="none"
-						viewBox="0 0 24 24"
-						><path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-						/></svg
-					>
-					<span>{errorLoadingConversationList.message}</span>
-				</div>
-			{/if}
-		</div>
+	<div slot="footer" class="contents">
+		<div class="flex-[1_1_10%] p-4"><Button preset="secondary">Preferences</Button></div>
+		<!-- <div class="flex top-0 left-0 absolute w-full h-full p-4 bg-chat-sidebar-bg">Hello</div> -->
 	</div>
-</aside>
+</Sidebar>
