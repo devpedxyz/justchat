@@ -121,7 +121,7 @@
 </script>
 
 {#if conversation}
-	<Header showSidebarToggler={$isSidebarOpen} heading={conversation.name}>
+	<Header showSidebarToggler={!$isSidebarOpen} heading={conversation.name}>
 		<div class="flex justify-end">
 			<Button preset="secondary">Info</Button>
 		</div>
