@@ -2,13 +2,13 @@
 	import type { Conversation } from '$lib/chat/types';
 
 	export let conversationList: Conversation[] = [];
-	export let selectecConversationId: string | null = null;
+	export let selectedConversationId: string | null = null;
 </script>
 
 <ul class="chat-room-list flex flex-col gap-2">
 	{#each conversationList as conversation}
 		<li
-			class="hover:bg-secondary/70 rounded-md{selectecConversationId === conversation.id
+			class="hover:bg-secondary/70 rounded-md{selectedConversationId === conversation.id
 				? ' bg-secondary text-primary font-bold'
 				: ''}"
 		>

@@ -56,7 +56,7 @@
 					<span class="loading loading-ring loading-lg" />
 				</p>
 			{:else if Array.isArray(conversationList)}
-				<ConversationList {conversationList} selectecConversationId={$page.params.slug} />
+				<ConversationList {conversationList} selectedConversationId={$page.params.slug} />
 			{:else if errorLoadingConversationList}
 				<div class="alert alert-error">
 					<svg
