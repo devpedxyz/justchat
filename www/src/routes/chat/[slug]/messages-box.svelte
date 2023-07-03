@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { afterUpdate, beforeUpdate, onMount, tick } from 'svelte';
+	import { afterUpdate, onMount } from 'svelte';
 	import type { ChatMessageWithDate, ConversationParticipant } from '../../../lib/chat/types';
 	import type { User } from '$lib/user/types';
 
