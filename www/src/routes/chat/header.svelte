@@ -18,8 +18,8 @@
 	{/if}
 	<h1 class="text-xl font-bold text-chat-header-heading">{heading}</h1>
 	<div class="flex-grow flex justify-end gap-4">
-		<Button preset="secondary"><span data-set-theme="night">Night</span></Button>
-		<Button preset="secondary"><span data-set-theme="light">Light</span></Button>
+		<span data-set-theme="night"><Button preset="secondary">Night</Button></span>
+		<span data-set-theme="light"><Button preset="secondary">Light</Button></span>
 		<slot />
 	</div>
 </header>
