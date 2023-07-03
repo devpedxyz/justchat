@@ -153,7 +153,7 @@
 	{:else if conversation}
 		<div class="flex flex-col w-full h-full bg-chat-chatbox">
 			<div class="flex flex-col w-full gap-4 flex-grow min-h-0">
-				<div class="chat-room flex min-h-16 flex-grow overflow-y-auto bg-chat-chatbox">
+				<div class="chat-room flex min-h-0 flex-grow bg-chat-chatbox">
 					{#if messagesWithDate.length > 0}
 						<MessagesBox
 							{messagesWithDate}

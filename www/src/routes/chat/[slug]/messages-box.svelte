@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { afterUpdate } from 'svelte';
+	import { afterUpdate, beforeUpdate, onMount, tick } from 'svelte';
 	import type { ChatMessageWithDate, ConversationParticipant } from '../../../lib/chat/types';
 	import type { User } from '$lib/user/types';
 
@@ -24,16 +24,25 @@
 		};
 	});
 
+	const scroll = (element: HTMLElement) =>
+		element.scroll({ top: element.scrollHeight, behavior: 'smooth' });
+
 	let chatBox: HTMLUListElement | null = null;
 
 	afterUpdate(() => {
 		if (chatBox) {
-			chatBox.scrollTop = chatBox.scrollHeight;
+			scroll(chatBox);
+		}
+	});
+
+	onMount(() => {
+		if (chatBox) {
+			scroll(chatBox);
 		}
 	});
 </script>
 
-<ul bind:this={chatBox} class="flex flex-col gap-2 flex-grow px-4 pt-4">
+<ul bind:this={chatBox} class="flex flex-col gap-2 flex-grow px-4 pt-4 overflow-y-auto min-h-0">
 	{#each messagesWithAuthor as message, idx}
 		{#if messagesWithAuthor[idx - 1] && message.date && messagesWithAuthor[idx - 1].date && message.date.getDay() !== messagesWithAuthor[idx - 1].date?.getDay()}
 			<li class="text-center text-layer/30">{message.date.toDateString()}</li>
@@ -41,7 +50,7 @@
 		<li class="flex gap-2 items-end {message.author_id === user.id ? ' flex-row-reverse' : ''}">
 			<span class="contents">
 				{#if message.author_id !== user.id}
-					<span class="rounded-full w-12 overflow-hidden">
+					<span class="rounded-full w-12 h-12 overflow-hidden">
 						<img src={message.author.user.profile_image_url} alt="User profile" />
 					</span>
 				{/if}
