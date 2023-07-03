@@ -5,7 +5,7 @@
 	import MessageInput from './message-input.svelte';
 	import MessagesBox from './messages-box.svelte';
 	import { goto } from '$app/navigation';
-	import { header, isSidebarOpen } from '../store';
+	import { header, isChatSidebarOpen } from '../store';
 	import { addMessageToConversation, getOneConversation } from '$lib/chat/api-client';
 	import { currentUser } from '$lib/user/store';
 	import Main from '../main.svelte';
@@ -121,7 +121,7 @@
 </script>
 
 {#if conversation}
-	<Header showSidebarToggler={!$isSidebarOpen} heading={conversation.name}>
+	<Header showSidebarToggler={!$isChatSidebarOpen} heading={conversation.name}>
 		<div class="flex justify-end">
 			<Button preset="secondary">Info</Button>
 		</div>

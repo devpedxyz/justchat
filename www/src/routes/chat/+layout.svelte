@@ -2,7 +2,6 @@
 	import { goto } from '$app/navigation';
 	import { currentUser } from '$lib/user/store';
 	import { onMount } from 'svelte';
-	import { isSidebarOpen } from './store';
 	import { getCurrentUser } from '$lib/user/api-client';
 	import Sidebar from './sidebar.svelte';
 
@@ -26,7 +25,7 @@
 
 <div class="h-screen w-screen flex flex-col">
 	<div class="flex overflow-y-auto flex-grow">
-		<Sidebar isSidebarOpen={$isSidebarOpen} />
+		<Sidebar />
 		<div class="flex flex-col flex-[1_1_80%]">
 			<slot />
 		</div>
