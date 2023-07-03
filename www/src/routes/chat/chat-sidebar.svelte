@@ -4,7 +4,6 @@
 	import type { Conversation } from '$lib/chat/types';
 	import { onMount } from 'svelte';
 	import ConversationList from './conversation-list.svelte';
-	import Button from '$lib/common/components/button.svelte';
 	import Sidebar from '$lib/common/components/sidebar.svelte';
 	import { isChatSidebarOpen } from './store';
 
@@ -66,9 +65,5 @@
 				<span>{errorLoadingConversationList.message}</span>
 			</div>
 		{/if}
-	</div>
-	<div slot="footer" class="contents">
-		<div class="flex-[1_1_10%] p-4"><Button preset="secondary">Preferences</Button></div>
-		<!-- <div class="flex top-0 left-0 absolute w-full h-full p-4 bg-chat-sidebar-bg">Hello</div> -->
 	</div>
 </Sidebar>
