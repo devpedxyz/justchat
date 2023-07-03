@@ -6,6 +6,7 @@
 	import ConversationList from './conversation-list.svelte';
 	import Button from '$lib/common/components/button.svelte';
 	import Sidebar from '$lib/common/components/sidebar.svelte';
+	import { isChatSidebarOpen } from './store';
 
 	async function loadConversationList() {
 		isLoadingConversationList = true;
@@ -39,7 +40,7 @@
 	});
 </script>
 
-<Sidebar>
+<Sidebar bind:isSidebarOpen={$isChatSidebarOpen}>
 	<a slot="header" href="/" class="text-2xl font-bold text-primary"><p>JustChat</p></a>
 	<div slot="body" class="contents">
 		{#if isLoadingConversationList}

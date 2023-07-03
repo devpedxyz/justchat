@@ -7,7 +7,7 @@
 <aside
 	class="{isSidebarOpen
 		? 'flex-[0_1_20%]'
-		: 'w-0 basis-0'} bg-chat-sidebar-bg h-full flex flex-col relative"
+		: 'w-0 basis-0'} bg-chat-sidebar-bg h-full flex flex-col relative overflow-hidden"
 >
 	<div class="flex justify-between items-center p-4 flex-[1_1_10%]">
 		<slot name="header" />
