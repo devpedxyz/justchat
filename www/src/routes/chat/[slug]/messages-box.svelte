@@ -30,7 +30,7 @@
 			return acc;
 		}
 
-		let existingMesssages: MessageWithAuthor[];
+		let existingMesssages: MessageWithAuthor[] | null = null;
 		const dayString = date.toLocaleDateString('en-US', {
 			year: 'numeric',
 			month: 'long',
