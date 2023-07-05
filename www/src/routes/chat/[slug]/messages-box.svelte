@@ -40,7 +40,7 @@
 		existingMesssages.push(message);
 		acc.set(dayString, existingMesssages);
 		return acc;
-	}, new Map() as Map<string, MessageWithAuthor[]>);
+	}, new Map<string, MessageWithAuthor[]>());
 
 	$: console.log('messagesGroupedByDate', messagesGroupedByDate);
 
