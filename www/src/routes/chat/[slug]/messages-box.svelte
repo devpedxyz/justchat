@@ -30,18 +30,12 @@
 			return acc;
 		}
 
-		let existingMesssages: MessageWithAuthor[] | null = null;
 		const dayString = date.toLocaleDateString('en-US', {
 			year: 'numeric',
 			month: 'long',
 			day: 'numeric'
 		});
-
-		if (acc.has(dayString)) {
-			existingMesssages = acc.get(dayString)!;
-		} else {
-			existingMesssages = [];
-		}
+		const existingMesssages: MessageWithAuthor[] = acc.get(dayString) || [];
 
 		existingMesssages.push(message);
 		acc.set(dayString, existingMesssages);
