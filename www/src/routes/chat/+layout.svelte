@@ -23,7 +23,7 @@
 <div class="h-screen w-screen flex flex-col">
 	<div class="flex overflow-y-auto flex-grow">
 		<ChatSidebar />
-		<div class="flex flex-col flex-[1_1_80%]">
+		<div class="flex flex-[1_1_80%] min-w-0">
 			<slot />
 		</div>
 	</div>

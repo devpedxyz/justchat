@@ -5,12 +5,13 @@
 	import MessageInput from './message-input.svelte';
 	import MessagesBox from './messages-box.svelte';
 	import { goto } from '$app/navigation';
-	import { header } from '../store';
+	import { header, isConversationInfoSidebarOpen } from '../store';
 	import { addMessageToConversation, getOneConversation } from '$lib/chat/api-client';
 	import { currentUser } from '$lib/user/store';
 	import Main from '../main.svelte';
 	import Header from '../header.svelte';
 	import Button from '$lib/common/components/button.svelte';
+	import ConversationInfoSidebar from './conversation-info-sidebar.svelte';
 
 	onMount(() => {
 		window.addEventListener('keydown', (e) => {
@@ -120,60 +121,65 @@
 	});
 </script>
 
-{#if conversation}
-	<Header heading={conversation.name}>
-		<div class="flex justify-end">
-			<Button preset="secondary">Info</Button>
-		</div>
-	</Header>
-{/if}
-<Main>
-	{#if isLoadingConversation}
-		<div class="flex items-center justify-center flex-grow">
-			<span class="loading loading-ring loading-lg" />
-		</div>
-	{:else if errorLoadingConversation}
-		<div class="flex items-start justify-around flex-grow p-4">
-			<div class="alert alert-error max-w-[50%]">
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					class="stroke-current shrink-0 h-6 w-6"
-					fill="none"
-					viewBox="0 0 24 24"
-					><path
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						stroke-width="2"
-						d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-					/></svg
+<div class="flex flex-col flex-[1_1_70%] flex-grow">
+	{#if conversation}
+		<Header heading={conversation.name}>
+			<div class="flex justify-end">
+				<Button
+					preset="secondary"
+					on:click={() => isConversationInfoSidebarOpen.set(!$isConversationInfoSidebarOpen)}
+					>Info</Button
 				>
-				<span>{errorLoadingConversation.message}</span>
 			</div>
-		</div>
-	{:else if conversation}
-		<div class="flex flex-col w-full h-full bg-chat-chatbox">
-			<div class="flex flex-col w-full gap-4 flex-grow min-h-0">
-				<div class="chat-room flex min-h-0 flex-grow bg-chat-chatbox">
-					{#if messagesWithDate.length > 0}
-						<MessagesBox
-							{messagesWithDate}
-							user={$currentUser}
-							participants={conversation.participants}
-						/>
-					{:else}
-						<div class="flex items-center justify-center flex-grow">
-							<p>Start chatting!</p>
-						</div>
-					{/if}
-				</div>
-				<MessageInput bind:value={inputMessage} on:submit={sendMessage} />
-			</div>
-		</div>
-	{:else}
-		<div class="flex items-center justify-center flex-grow">
-			<p>Conversation not found</p>
-		</div>
+		</Header>
 	{/if}
-</Main>
-
-<!-- <div class="convo-info fixed top-0 right-0 min-w-min flex">Hello</div> -->
+	<Main>
+		{#if isLoadingConversation}
+			<div class="flex items-center justify-center flex-grow">
+				<span class="loading loading-ring loading-lg" />
+			</div>
+		{:else if errorLoadingConversation}
+			<div class="flex items-start justify-around flex-grow p-4">
+				<div class="alert alert-error max-w-[50%]">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						class="stroke-current shrink-0 h-6 w-6"
+						fill="none"
+						viewBox="0 0 24 24"
+						><path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+						/></svg
+					>
+					<span>{errorLoadingConversation.message}</span>
+				</div>
+			</div>
+		{:else if conversation}
+			<div class="flex flex-col w-full h-full bg-chat-chatbox">
+				<div class="flex flex-col w-full gap-4 flex-grow min-h-0">
+					<div class="chat-room flex min-h-0 flex-grow bg-chat-chatbox">
+						{#if messagesWithDate.length > 0}
+							<MessagesBox
+								{messagesWithDate}
+								user={$currentUser}
+								participants={conversation.participants}
+							/>
+						{:else}
+							<div class="flex items-center justify-center flex-grow">
+								<p>Start chatting!</p>
+							</div>
+						{/if}
+					</div>
+					<MessageInput bind:value={inputMessage} on:submit={sendMessage} />
+				</div>
+			</div>
+		{:else}
+			<div class="flex items-center justify-center flex-grow">
+				<p>Conversation not found</p>
+			</div>
+		{/if}
+	</Main>
+</div>
+<ConversationInfoSidebar {conversation} isLoading={isLoadingConversation} />
