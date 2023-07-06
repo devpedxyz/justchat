@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { PanelLeftClose, PanelLeftOpen } from 'lucide-svelte';
 	import Button from './button.svelte';
 
 	export let isSidebarOpen = false;
@@ -13,7 +14,12 @@
 		<slot name="header" />
 		<slot name="toggler" toggler={() => (isSidebarOpen = !isSidebarOpen)}>
 			<Button preset="secondary" on:click={() => (isSidebarOpen = !isSidebarOpen)}>
-				<svg
+				{#if isSidebarOpen}
+					<PanelLeftClose />
+				{:else}
+					<PanelLeftOpen />
+				{/if}
+				<!-- <svg
 					xmlns="http://www.w3.org/2000/svg"
 					fill="none"
 					viewBox="0 0 24 24"
@@ -24,7 +30,7 @@
 						stroke-width="2"
 						d="M4 6h16M4 12h16M4 18h16"
 					/></svg
-				>
+				> -->
 			</Button>
 		</slot>
 	</div>

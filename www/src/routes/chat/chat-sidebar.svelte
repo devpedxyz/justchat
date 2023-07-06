@@ -6,6 +6,7 @@
 	import ConversationList from './conversation-list.svelte';
 	import Sidebar from '$lib/common/components/sidebar.svelte';
 	import { isChatSidebarOpen } from './store';
+	import { XCircle } from 'lucide-svelte';
 
 	async function loadConversationList() {
 		isLoadingConversationList = true;
@@ -44,24 +45,13 @@
 	<div slot="body" class="contents">
 		{#if isLoadingConversationList}
 			<p class="text-center">
-				<span class="loading loading-ring loading-lg" />
+				<span class="loading loading-ring loading-lg">Loading...</span>
 			</p>
 		{:else if Array.isArray(conversationList)}
 			<ConversationList {conversationList} selectedConversationId={$page.params.slug} />
 		{:else if errorLoadingConversationList}
 			<div class="alert alert-error">
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					class="stroke-current shrink-0 h-6 w-6"
-					fill="none"
-					viewBox="0 0 24 24"
-					><path
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						stroke-width="2"
-						d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-					/></svg
-				>
+				<XCircle />
 				<span>{errorLoadingConversationList.message}</span>
 			</div>
 		{/if}

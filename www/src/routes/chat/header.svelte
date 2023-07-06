@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { Sun, Moon } from 'lucide-svelte';
 	import Button from '$lib/common/components/button.svelte';
 	import { onMount } from 'svelte';
 	import SidebarToggler from './sidebar-toggler.svelte';
@@ -18,8 +19,8 @@
 	{/if}
 	<h1 class="text-xl font-bold text-chat-header-heading">{heading}</h1>
 	<div class="flex-grow flex justify-end gap-4">
-		<span data-set-theme="night"><Button preset="secondary">Night</Button></span>
-		<span data-set-theme="light"><Button preset="secondary">Light</Button></span>
+		<span data-set-theme="night"><Button preset="secondary"><Moon /></Button></span>
+		<span data-set-theme="light"><Button preset="secondary"><Sun /></Button></span>
 		<slot />
 	</div>
 </header>

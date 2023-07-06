@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { Conversation } from '$lib/chat/types';
 	import Sidebar from '$lib/common/components/sidebar.svelte';
+	import { X } from 'lucide-svelte';
 	import { isConversationInfoSidebarOpen } from '../store';
 
 	export let conversation: Conversation | null = null;
@@ -9,7 +10,7 @@
 
 <Sidebar bind:isSidebarOpen={$isConversationInfoSidebarOpen}>
 	<svelte:fragment slot="toggler" let:toggler>
-		<button class="rounded" on:click={toggler}>Close</button>
+		<button class="rounded" on:click={toggler}><X /></button>
 	</svelte:fragment>
 	<p slot="header" class="text-2xl font-bold text-primary">Converstaion Info</p>
 	<svelte:fragment slot="body">

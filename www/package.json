@@ -38,6 +38,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"lucide-svelte": "^0.258.0",
 		"theme-change": "^2.5.0"
 	}
 }
