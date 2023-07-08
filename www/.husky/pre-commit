@@ -1,4 +1,10 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-git diff --cached --name-only | grep -E '^www/' && cd www && pnpm run format && pnpm run lint && pnpm run test:unit
+if git diff --cached --name-only | grep -q -E '^www/'; then
+    echo "Changes in 'www' directory detected"
+    cd www
+    pnpm run format && pnpm run lint && pnpm run test:unit
+else
+    echo "No changes in 'www' directory"
+fi
